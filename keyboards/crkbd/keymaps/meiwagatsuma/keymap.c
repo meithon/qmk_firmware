@@ -65,7 +65,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_ADJUST] = LAYOUT_split_3x6_3(
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
-      CG_TOGG,   KC_F1,   KC_F2,   KC_F3,   KC_F4, RGB_TOG,                        KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,  KC_F10,
+      _______,   KC_F1,   KC_F2,   KC_F3,   KC_F4, RGB_TOG,                        KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,  KC_F10,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       RGB_MOD, RGB_HUI, RGB_SAI, RGB_VAI, RGB_SPI,  BL_INC,                      KC_HOME, KC_PGDN, KC_PGUP,  KC_END,  KC_F11,  KC_F12,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
@@ -170,7 +170,6 @@ bool oled_task_user(void) {
     if (is_keyboard_master()) {
         oled_render_layer_state();
         oled_render_keylog();
-        render_bootmagic_status(keymap_config.swap_lctl_lgui);
     } else {
         oled_render_logo();
     }
@@ -193,13 +192,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         update_tri_layer(_LOWER, _RAISE, _ADJUST);
 
         if (lower_pressed) {
-          if (keymap_config.swap_lctl_lgui) {
-            register_code(KC_LANG2);
-            unregister_code(KC_LANG2);
-          } else {
-            register_code(KC_MHEN);
-            unregister_code(KC_MHEN);
-          }
+          register_code(KC_LANG2);
+          register_code(KC_MHEN);
+          unregister_code(KC_LANG2);
+          unregister_code(KC_MHEN);
         }
         lower_pressed = false;
       }
@@ -216,13 +212,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         update_tri_layer(_LOWER, _RAISE, _ADJUST);
 
         if (lower_pressed) {
-          if (keymap_config.swap_lctl_lgui) {
-            register_code(KC_LANG1);
-            unregister_code(KC_LANG1);
-          } else {
-            register_code(KC_HENK);
-            unregister_code(KC_HENK);
-          }
+          register_code(KC_LANG1);
+          register_code(KC_HENK);
+          unregister_code(KC_LANG1);
+          unregister_code(KC_HENK);
         }
         lower_pressed = false;
       }
