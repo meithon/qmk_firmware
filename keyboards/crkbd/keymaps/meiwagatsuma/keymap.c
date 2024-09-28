@@ -23,14 +23,15 @@ enum custom_keycodes {
   _LOWER = 1,
   _RAISE = 2,
   _ADJUST = 3,
-  _ENTER = 104,
-  _ALT = 100,
-  _VI_W = 101, // next word
-  _VI_B = 102, // prev word
-  _DEL_W = 103, // delete word
+  _ENTER  = 100,
+  _ALT    = 101,
+  _VI_W   = 102, // next word
+  _VI_B   = 103, // prev word
+  _DEL_W  = 104, // delete word
+  _GUI    = 105,
 };
 
-const uint16_t PROGMEM keymaps[    ][MATRIX_ROWS][MATRIX_COLS] = {
+const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [0] = LAYOUT_split_3x6_3(
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
        KC_TAB,    KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                         KC_Y,    KC_U,    KC_I,    KC_O,   KC_P,  KC_BSPC,
@@ -39,7 +40,7 @@ const uint16_t PROGMEM keymaps[    ][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       KC_LSFT,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                         KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH,  KC_RSFT,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                          KC_LGUI,  _LOWER,  KC_SPC,     _ENTER,  _RAISE, KC_RSFT
+                                            _GUI,  _LOWER,  KC_SPC,     _ENTER,  _RAISE, KC_RSFT
                                       //`--------------------------'  `--------------------------'
 
   ),
@@ -48,17 +49,17 @@ const uint16_t PROGMEM keymaps[    ][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_LOWER] = LAYOUT_split_3x6_3(
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
-      KC_TILD, KC_HASH, KC_LCBR,  KC_DLR, KC_PERC,  KC_ESC,                      KC_AMPR, KC_CIRC, KC_LPRN,  KC_GRV, KC_RCBR, KC_RBRC,
+      KC_TILD, KC_HASH, KC_LCBR,  KC_DLR, KC_PERC,  KC_ESC,                      KC_AMPR, KC_CIRC, KC_LPRN,  KC_GRV, KC_RBRC, KC_RCBR,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
        KC_TAB,  KC_DOT, KC_COMM, KC_SCLN, KC_COLN, KC_ASTR,                      KC_DQUO, KC_QUOT, KC_MINS,  KC_EQL, KC_PLUS, KC_RPRN,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       _______, KC_LABK, KC_RABK, KC_LBRC, KC_SLSH, KC_QUES,                       KC_PIPE, KC_EXLM, KC_BSLS, KC_UNDS, KC_BSPC,  KC_AT,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                          KC_LCTL, KC_TRNS,  KC_SPC,     KC_ENT,MO(_RAISE),KC_LALT
+                                          _______, _______, _______,   _______,MO(_ADJUST),_______
                                       //`--------------------------'  `--------------------------'
 
  //                               ,-----------------------.                    ,-----------------------.
- //                               | ~ , # , { , $ , % ,ESC,                    , & , ^ , ( , ` , } , ] |
+ //                               | ~ , # , { , $ , % ,ESC,                    , & , ^ , ( , ` , ] , } |
  //                               |---+---+---+---+---+---|                    |---+---+---+---+---+---|
  //                               |TAB, . , , , ; , : , * ,                    , " , ' , - , = , + , ) |
  //                               |---+---+---+---+---+---|                    |---+---+---+---+---+---|
@@ -76,7 +77,7 @@ const uint16_t PROGMEM keymaps[    ][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
      _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                          _______,MO(_ADJUST), _ALT,     _ENTER, KC_TRNS, KC_RSFT
+                                         _______,MO(_ADJUST),_______,   _______, _______, _______
                                       //`--------------------------'  `--------------------------'
   ),
 
@@ -88,7 +89,7 @@ const uint16_t PROGMEM keymaps[    ][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       _______, XXXXXXX,  _DEL_W,   _VI_B,   _VI_W, XXXXXXX,                      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                          _______, KC_TRNS,    _ALT,     _ENTER, KC_TRNS, KC_RSFT
+                                          _______, _______, _______,    _______, _______, _______
                                       //`--------------------------'  `--------------------------'
   )
 };
@@ -196,7 +197,14 @@ bool oled_task_user(void) {
 #endif // OLED_ENABLE
 
 static bool lower_pressed = false;
-static bool enable_alt = false;
+
+struct Enable_alt {
+    bool by_gui;
+    bool by_enter;
+};
+
+static  struct Enable_alt enable_alt = { false, false };
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
     case _LOWER:
@@ -230,55 +238,54 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         update_tri_layer(_LOWER, _RAISE, _ADJUST);
 
         if (lower_pressed) {
-          register_code(KC_LNG1);
-          // register_code(KC_HENK);
-          unregister_code(KC_LNG1);
-          // unregister_code(KC_HENK);
+          tap_code(KC_LNG1);
         }
         lower_pressed = false;
       }
       return false;
       break;
     case _ENTER:
-      if (enable_alt) {
-        if (record->event.pressed) {
-          register_code(KC_LALT);
-        } else {
-          unregister_code(KC_LALT);
-          enable_alt = false;
-        }
-        return false;
-        break;
-      }
       if (record->event.pressed) {
         lower_pressed = true;
-        enable_alt = true;
-
-        register_code(KC_LCTL);
+        if (enable_alt.by_gui) {
+          unregister_code(KC_LGUI);
+          register_code(KC_LALT);
+          // return true;
+        } else {
+          register_code(KC_LCTL);
+          enable_alt.by_enter = true;
+        }
       } else {
         unregister_code(KC_LCTL);
-
-        if (lower_pressed) {
-          register_code(KC_ENT);
-          unregister_code(KC_ENT);
+        if (enable_alt.by_enter) {
+          unregister_code(KC_LALT);
+          enable_alt.by_enter = false;
         }
-        lower_pressed = false;
-        enable_alt = false;
+        if (lower_pressed) {
+          tap_code(KC_ENT);
+          lower_pressed = false;
+        }
       }
       return false;
       break;
-    case KC_LGUI:
-      if (enable_alt) {
-        if (record->event.pressed) {
+    case _GUI:
+      if (record->event.pressed) {
+        if (enable_alt.by_enter) {
+          unregister_code(KC_LCTL);
           register_code(KC_LALT);
+          // return true;
         } else {
-          unregister_code(KC_LALT);
-          enable_alt = false;
+          register_code(KC_LGUI);
+          enable_alt.by_gui = true;
         }
-        return false;
-        break;
+      } else {
+        unregister_code(KC_LGUI);
+        if (enable_alt.by_gui) {
+          unregister_code(KC_LALT);
+          enable_alt.by_gui = false;
+        }
       }
-      return true;
+      return false;
       break;
     case _ALT:
       if (record->event.pressed) {
@@ -324,7 +331,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       if (record->event.pressed) {
         // reset the flag
         lower_pressed = false;
-        enable_alt = false;
+        enable_alt.by_gui = false;
+        enable_alt.by_enter = false;
       }
       break;
   }
