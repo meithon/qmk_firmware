@@ -23,7 +23,7 @@ enum custom_keycodes {
   _LOWER = 1,
   _RAISE = 2,
   _ADJUST = 3,
-  _ENTER = 4,
+  _ENTER = 0,
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -236,6 +236,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
         lower_pressed = false;
       }
+      return false;
+      break;
     default:
       if (record->event.pressed) {
         // reset the flag
