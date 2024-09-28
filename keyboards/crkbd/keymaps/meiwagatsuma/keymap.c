@@ -25,8 +25,8 @@ enum custom_keycodes {
   _ADJUST = 3,
   _ENTER = 104,
   _ALT = 100,
-  _VI_W = 101,
-  _VI_B = 102,
+  _VI_W = 101, // next word
+  _VI_B = 102, // prev word
   _DEL_W = 103, // delete word
 };
 
@@ -44,25 +44,37 @@ const uint16_t PROGMEM keymaps[    ][MATRIX_ROWS][MATRIX_COLS] = {
 
   ),
 
+
+
   [_LOWER] = LAYOUT_split_3x6_3(
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
-       KC_ESC,  KC_TAB,   _VI_W,  KC_END, XXXXXXX,  KC_ESC,                     XXXXXXX, XXXXXXX,  KC_DEL, KC_BSPC, KC_LBRC, KC_RBRC,
+      KC_TILD, KC_HASH, KC_LCBR,  KC_DLR, KC_PERC,  KC_ESC,                      KC_AMPR, KC_CIRC, KC_LPRN,  KC_GRV, KC_RCBR, KC_RBRC,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      _______, KC_HOME, XXXXXXX,  _DEL_W, KC_BSPC, XXXXXXX,                      KC_LEFT, KC_DOWN,   KC_UP, KC_RGHT, KC_QUOT, KC_NUHS,
+       KC_TAB,  KC_DOT, KC_COMM, KC_SCLN, KC_COLN, KC_ASTR,                      KC_DQUO, KC_QUOT, KC_MINS,  KC_EQL, KC_PLUS, KC_RPRN,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      _______, KC_LALT, XXXXXXX, XXXXXXX, XXXXXXX,   _VI_B,                      KC_HOME, KC_PGUP, KC_PGDN,  KC_END, KC_SLSH, KC_INT1,
+      _______, KC_LABK, KC_RABK, KC_LBRC, KC_SLSH, KC_QUES,                       KC_PIPE, KC_EXLM, KC_BSLS, KC_UNDS, KC_BSPC,  KC_AT,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                          _______, KC_TRNS,    _ALT,     _ENTER,MO(_ADJUST),KC_RSFT
+                                          KC_LCTL, KC_TRNS,  KC_SPC,     KC_ENT,MO(_RAISE),KC_LALT
                                       //`--------------------------'  `--------------------------'
+
+ //                               ,-----------------------.                    ,-----------------------.
+ //                               | ~ , # , { , $ , % ,ESC,                    , & , ^ , ( , ` , } , ] |
+ //                               |---+---+---+---+---+---|                    |---+---+---+---+---+---|
+ //                               |TAB, . , , , ; , : , * ,                    , " , ' , - , = , + , ) |
+ //                               |---+---+---+---+---+---|                    |---+---+---+---+---+---|
+ //                               |   , < , > , [ , / , ? ,                    , | , ! , \ , _ ,BSPC,@ |
+ //                               `---+---+---+---+---+---+---.            ,---+---+---+---+---+---+---`
+ //                                             |CTRL,LOWER,SPC,          |ENT,RAISE,ALT|
+ //                                              `---+---+---`             `---+---+---`
   ),
 
   [_RAISE] = LAYOUT_split_3x6_3(
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
-      KC_TILD, KC_EXLM,   KC_AT, KC_HASH,  KC_DLR, KC_PERC,                      KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_MINS,
-  //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
        KC_GRV,   KC_1,     KC_2,    KC_3,    KC_4,    KC_5,                          KC_6,   KC_7,    KC_8,    KC_9,    KC_0,  KC_EQL,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      _______, XXXXXXX, KC_EQL,  KC_MINS, XXXXXXX, XXXXXXX,                      KC_LPRN, KC_RPRN, KC_LBRC, KC_RBRC, KC_NUHS, KC_INT3,
+      KC_TILD, KC_EXLM,   KC_AT, KC_HASH,  KC_DLR, KC_PERC,                      KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_MINS,
+  //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
+      _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
                                           _______,MO(_ADJUST), _ALT,     _ENTER, KC_TRNS, KC_RSFT
                                       //`--------------------------'  `--------------------------'
@@ -70,11 +82,11 @@ const uint16_t PROGMEM keymaps[    ][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_ADJUST] = LAYOUT_split_3x6_3(
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
-      _______,   KC_F1,   KC_F2,   KC_F3,   KC_F4, RGB_TOG,                        KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,  KC_F10,
+        KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,                        KC_F7,   KC_F8,   KC_F9,  KC_F10,  KC_F11,  KC_F12,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      RGB_MOD, RGB_HUI, RGB_SAI, RGB_VAI, RGB_SPI, XXXXXXX,                      KC_HOME, KC_PGDN, KC_PGUP,  KC_END,  KC_F11,  KC_F12,
+      RGB_MOD, RGB_HUI, RGB_SAI, RGB_VAI, RGB_SPI, RGB_TOG,                      KC_LEFT, KC_DOWN,   KC_UP, KC_RGHT, KC_VOLU, KC_VOLD,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-     RGB_RMOD, RGB_HUD, RGB_SAD, RGB_VAD, RGB_SPD, XXXXXXX,                      KC_VOLU, KC_VOLD, XXXXXXX, XXXXXXX, XXXXXXX, KC_NO,
+      _______, XXXXXXX,  _DEL_W,   _VI_B,   _VI_W, XXXXXXX,                      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
                                           _______, KC_TRNS,    _ALT,     _ENTER, KC_TRNS, KC_RSFT
                                       //`--------------------------'  `--------------------------'
