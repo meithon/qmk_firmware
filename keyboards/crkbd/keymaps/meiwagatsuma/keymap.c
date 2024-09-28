@@ -23,10 +23,14 @@ enum custom_keycodes {
   _LOWER = 1,
   _RAISE = 2,
   _ADJUST = 3,
-  _ENTER = 0,
+  _ENTER = 104,
+  _ALT = 100,
+  _VI_W = 101,
+  _VI_B = 102,
+  _DEL_W = 103, // delete word
 };
 
-const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
+const uint16_t PROGMEM keymaps[    ][MATRIX_ROWS][MATRIX_COLS] = {
   [0] = LAYOUT_split_3x6_3(
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
        KC_TAB,    KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                         KC_Y,    KC_U,    KC_I,    KC_O,   KC_P,  KC_BSPC,
@@ -35,32 +39,32 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       KC_LSFT,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                         KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH,  KC_RSFT,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                          KC_LGUI,  _LOWER,  KC_SPC,     _ENTER,  _RAISE, KC_RALT
+                                          KC_LGUI,  _LOWER,    _ALT,     _ENTER,  _RAISE, KC_RSFT
                                       //`--------------------------'  `--------------------------'
 
   ),
 
   [_LOWER] = LAYOUT_split_3x6_3(
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
-       KC_ESC,  KC_TAB, XXXXXXX,  KC_END, XXXXXXX, XXXXXXX,                      XXXXXXX, XXXXXXX,  KC_DEL, KC_BSPC, KC_LBRC, KC_RBRC,
+       KC_ESC,  KC_TAB,   _VI_W,  KC_END, XXXXXXX,  KC_ESC,                     XXXXXXX, XXXXXXX,  KC_DEL, KC_BSPC, KC_LBRC, KC_RBRC,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      _______, KC_HOME, XXXXXXX, KC_BSPC,  KC_DEL, XXXXXXX,                      KC_LEFT, KC_DOWN,   KC_UP, KC_RGHT, KC_QUOT, KC_NUHS,
+      _______, KC_HOME, XXXXXXX,  _DEL_W, KC_BSPC, XXXXXXX,                      KC_LEFT, KC_DOWN,   KC_UP, KC_RGHT, KC_QUOT, KC_NUHS,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      _______, KC_LALT, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                      KC_HOME, KC_PGUP, KC_PGDN,  KC_END, KC_SLSH, KC_INT1,
+      _______, KC_LALT, XXXXXXX, XXXXXXX, XXXXXXX,   _VI_B,                      KC_HOME, KC_PGUP, KC_PGDN,  KC_END, KC_SLSH, KC_INT1,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                          _______, KC_TRNS,  KC_SPC,     _ENTER,MO(_ADJUST),KC_RALT
+                                          _______, KC_TRNS,    _ALT,     _ENTER,MO(_ADJUST),KC_RSFT
                                       //`--------------------------'  `--------------------------'
   ),
 
   [_RAISE] = LAYOUT_split_3x6_3(
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
-       KC_GRV,   KC_1,     KC_2,    KC_3,    KC_4,    KC_5,                          KC_6,   KC_7,    KC_8,    KC_9,    KC_0, KC_MINS,
+      KC_TILD, KC_EXLM,   KC_AT, KC_HASH,  KC_DLR, KC_PERC,                      KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_MINS,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      KC_TILD, KC_EXLM,   KC_AT, KC_HASH,  KC_DLR, KC_PERC,                      KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN,  KC_EQL,
+       KC_GRV,   KC_1,     KC_2,    KC_3,    KC_4,    KC_5,                          KC_6,   KC_7,    KC_8,    KC_9,    KC_0,  KC_EQL,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_INT3,
+      _______, XXXXXXX, KC_EQL,  KC_MINS, XXXXXXX, XXXXXXX,                      KC_LPRN, KC_RPRN, KC_LBRC, KC_RBRC, KC_NUHS, KC_INT3,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                          _______,MO(_ADJUST),KC_SPC,     _ENTER, KC_TRNS, KC_RALT
+                                          _______,MO(_ADJUST), _ALT,     _ENTER, KC_TRNS, KC_RSFT
                                       //`--------------------------'  `--------------------------'
   ),
 
@@ -72,7 +76,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
      RGB_RMOD, RGB_HUD, RGB_SAD, RGB_VAD, RGB_SPD, XXXXXXX,                      KC_VOLU, KC_VOLD, XXXXXXX, XXXXXXX, XXXXXXX, KC_NO,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                          _______, KC_TRNS,  KC_SPC,     _ENTER, KC_TRNS, KC_RALT
+                                          _______, KC_TRNS,    _ALT,     _ENTER, KC_TRNS, KC_RSFT
                                       //`--------------------------'  `--------------------------'
   )
 };
@@ -222,7 +226,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
       break;
-    case _ENTER: // Enterが押されたら
+    case _ENTER:
       if (record->event.pressed) {
         lower_pressed = true;
 
@@ -236,6 +240,46 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
         lower_pressed = false;
       }
+      return false;
+      break;
+    case _ALT:
+      if (record->event.pressed) {
+        lower_pressed = true;
+
+        register_code(KC_RALT);
+      } else {
+        unregister_code(KC_RALT);
+
+        if (lower_pressed) {
+          register_code(KC_SPC);
+          unregister_code(KC_SPC);
+        }
+        lower_pressed = false;
+      }
+      return false;
+      break;
+    case _VI_W:
+      if (record->event.pressed) {
+        register_code(KC_RALT);
+        tap_code(KC_RIGHT);
+        unregister_code(KC_RALT);
+      }
+      return false;
+      break;
+    case _VI_B:
+      if (record->event.pressed) {
+        register_code(KC_RALT);
+        tap_code(KC_LEFT);
+        unregister_code(KC_RALT);
+      }
+      return false;
+      break;
+    case _DEL_W:
+      if (record->event.pressed) {
+        register_code(KC_RALT);
+        tap_code(KC_BSPC);
+        unregister_code(KC_RALT);
+       }
       return false;
       break;
     default:
