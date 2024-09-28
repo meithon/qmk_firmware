@@ -39,7 +39,7 @@ const uint16_t PROGMEM keymaps[    ][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       KC_LSFT,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                         KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH,  KC_RSFT,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                          KC_LGUI,  _LOWER,    _ALT,     _ENTER,  _RAISE, KC_RSFT
+                                          KC_LGUI,  _LOWER,  KC_SPC,     _ENTER,  _RAISE, KC_RSFT
                                       //`--------------------------'  `--------------------------'
 
   ),
@@ -74,7 +74,7 @@ const uint16_t PROGMEM keymaps[    ][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       KC_TILD, KC_EXLM,   KC_AT, KC_HASH,  KC_DLR, KC_PERC,                      KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_MINS,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
+     _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
                                           _______,MO(_ADJUST), _ALT,     _ENTER, KC_TRNS, KC_RSFT
                                       //`--------------------------'  `--------------------------'
@@ -196,6 +196,7 @@ bool oled_task_user(void) {
 #endif // OLED_ENABLE
 
 static bool lower_pressed = false;
+static bool enable_alt = false;
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
     case _LOWER:
@@ -239,8 +240,19 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       return false;
       break;
     case _ENTER:
+      if (enable_alt) {
+        if (record->event.pressed) {
+          register_code(KC_LALT);
+        } else {
+          unregister_code(KC_LALT);
+          enable_alt = false;
+        }
+        return false;
+        break;
+      }
       if (record->event.pressed) {
         lower_pressed = true;
+        enable_alt = true;
 
         register_code(KC_LCTL);
       } else {
@@ -251,8 +263,22 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
           unregister_code(KC_ENT);
         }
         lower_pressed = false;
+        enable_alt = false;
       }
       return false;
+      break;
+    case KC_LGUI:
+      if (enable_alt) {
+        if (record->event.pressed) {
+          register_code(KC_LALT);
+        } else {
+          unregister_code(KC_LALT);
+          enable_alt = false;
+        }
+        return false;
+        break;
+      }
+      return true;
       break;
     case _ALT:
       if (record->event.pressed) {
@@ -298,6 +324,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       if (record->event.pressed) {
         // reset the flag
         lower_pressed = false;
+        enable_alt = false;
       }
       break;
   }
