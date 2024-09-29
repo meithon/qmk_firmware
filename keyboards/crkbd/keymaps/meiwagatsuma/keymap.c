@@ -329,8 +329,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       if (record->event.pressed) {
         // reset the flag
         lower_pressed = false;
-        enable_alt.by_gui = false;
-        enable_alt.by_enter = false;
       }
       break;
   }
