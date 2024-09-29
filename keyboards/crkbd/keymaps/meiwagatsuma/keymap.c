@@ -75,7 +75,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       KC_TILD, KC_EXLM,   KC_AT, KC_HASH,  KC_DLR, KC_PERC,                      KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN,  KC_EQL,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-     _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                      XXXXXXX,  KC_LEFT, KC_DOWN,   KC_UP, KC_RGHT, XXXXXXX,
+     _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                       KC_LEFT, KC_DOWN,   KC_UP, KC_RGHT, XXXXXXX, XXXXXXX,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
                                          _______,MO(_ADJUST),_______,   _______, _______, _______
                                       //`--------------------------'  `--------------------------'
@@ -246,12 +246,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       break;
     case _ENTER:
       if (record->event.pressed) {
-        lower_pressed = true;
         if (enable_alt.by_gui) {
           unregister_code(KC_LGUI);
           register_code(KC_LALT);
-          // return true;
         } else {
+          lower_pressed = true;
           register_code(KC_LCTL);
           enable_alt.by_enter = true;
         }
@@ -273,7 +272,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         if (enable_alt.by_enter) {
           unregister_code(KC_LCTL);
           register_code(KC_LALT);
-          // return true;
         } else {
           register_code(KC_LGUI);
           enable_alt.by_gui = true;
