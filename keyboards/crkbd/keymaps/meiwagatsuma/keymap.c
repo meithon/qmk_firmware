@@ -292,20 +292,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       break;
     case _ENTER:
       if (record->event.pressed) {
-        if (enable_alt.by_gui) {
-          unregister_code(KC_LGUI);
-          register_code(KC_LALT);
-        } else {
-          lower_pressed = true;
-          register_code(KC_LCTL);
-          enable_alt.by_shift = true;
-        }
+        lower_pressed = true;
+        register_code(KC_LCTL);
       } else {
         unregister_code(KC_LCTL);
-        if (enable_alt.by_shift) {
-          unregister_code(KC_LALT);
-          enable_alt.by_shift = false;
-        }
+
         if (lower_pressed) {
           tap_code(KC_ENT);
           lower_pressed = false;
