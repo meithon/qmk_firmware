@@ -307,7 +307,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case _GUI:
       if (record->event.pressed) {
         if (enable_alt.by_shift) {
-          unregister_code(KC_RS);
+          unregister_code(KC_RSFT);
           register_code(KC_LALT);
         } else {
           register_code(KC_LGUI);
