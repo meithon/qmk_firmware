@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include QMK_KEYBOARD_H
 #include <stdio.h>
+// #include <iostream>
 
 enum custom_keycodes {
   _LOWER = 1,
@@ -29,6 +30,7 @@ enum custom_keycodes {
   _VI_B   = 103, // prev word
   _DEL_W  = 104, // delete word
   _GUI    = 105,
+  _SHIFT  = 106,
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -40,7 +42,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       KC_LSFT,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                         KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH,  KC_RSFT,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                            _GUI,  _LOWER,  KC_SPC,     _ENTER,  KC_RSFT, _RAISE
+                                            _GUI,  _LOWER,  KC_SPC,      KC_ENT,  _SHIFT,  _RAISE
                                       //`--------------------------'  `--------------------------'
 
   ),
@@ -196,22 +198,40 @@ bool oled_task_user(void) {
 
 #endif // OLED_ENABLE
 
-static bool lower_pressed = false;
 
 struct Enable_alt {
     bool by_gui;
-    bool by_enter;
+    bool by_shift;
+};
+
+enum ADJUST_FLAG {
+    BY_SHIFT,
+    BY_LOWER,
+    NONE,
 };
 
 static  struct Enable_alt enable_alt = { false, false };
+static bool lower_pressed = false;
+static bool adjust_flag = false;
+
+void try_adjust_layers(void) {
+    if (!adjust_flag) { // Already pressing adjust key
+        adjust_flag = false;
+        layer_off(_ADJUST);
+        update_tri_layer(_LOWER, _RAISE, _ADJUST);
+    }
+}
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
     case _LOWER:
       if (record->event.pressed) {
-        lower_pressed = true;
-
-        layer_on(_LOWER);
+        if (adjust_flag) { // Already pressing adjust key
+          layer_on(_ADJUST);
+        }else {
+          adjust_flag = true;
+          layer_on(_LOWER);
+        }
         update_tri_layer(_LOWER, _RAISE, _ADJUST);
       } else {
         layer_off(_LOWER);
@@ -224,6 +244,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
           // unregister_code(KC_MHEN);
         }
         lower_pressed = false;
+        try_adjust_layers();
       }
       return false;
       break;
@@ -244,6 +265,31 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
       break;
+    case _SHIFT:
+      if (record->event.pressed) {
+        if (adjust_flag) {
+          layer_on(_ADJUST);
+          update_tri_layer(_LOWER, _RAISE, _ADJUST);
+          return false;
+        }
+        adjust_flag = true;
+        if (enable_alt.by_gui) {
+          unregister_code(KC_LGUI);
+          register_code(KC_LALT);
+        } else {
+          register_code(KC_RSFT);
+          enable_alt.by_shift = true;
+        }
+      } else {
+        unregister_code(KC_RSFT);
+        if (enable_alt.by_shift) {
+          unregister_code(KC_LALT);
+          enable_alt.by_shift = false;
+        }
+        try_adjust_layers();
+      }
+      return false;
+      break;
     case _ENTER:
       if (record->event.pressed) {
         if (enable_alt.by_gui) {
@@ -252,13 +298,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         } else {
           lower_pressed = true;
           register_code(KC_LCTL);
-          enable_alt.by_enter = true;
+          enable_alt.by_shift = true;
         }
       } else {
         unregister_code(KC_LCTL);
-        if (enable_alt.by_enter) {
+        if (enable_alt.by_shift) {
           unregister_code(KC_LALT);
-          enable_alt.by_enter = false;
+          enable_alt.by_shift = false;
         }
         if (lower_pressed) {
           tap_code(KC_ENT);
@@ -269,7 +315,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       break;
     case _GUI:
       if (record->event.pressed) {
-        if (enable_alt.by_enter) {
+        if (enable_alt.by_shift) {
           unregister_code(KC_LCTL);
           register_code(KC_LALT);
         } else {
