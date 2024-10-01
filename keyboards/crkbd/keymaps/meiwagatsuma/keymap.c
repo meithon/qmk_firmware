@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // #include <iostream>
 
 enum custom_keycodes {
+  NONE_STATE = 1000,
   _LOWER = 1,
   _RAISE = 2,
   _ADJUST = 3,
@@ -213,6 +214,7 @@ enum ADJUST_FLAG {
 static  struct Enable_alt enable_alt = { false, false };
 static bool lower_pressed = false;
 static bool adjust_flag = false;
+static enum custom_keycodes shift_kc = NONE_STATE;
 
 void try_adjust_layers(void) {
     if (!adjust_flag) { // Already pressing adjust key
@@ -227,6 +229,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case _LOWER:
       if (record->event.pressed) {
         if (adjust_flag) { // Already pressing adjust key
+          unregister_code(shift_kc);
           layer_on(_ADJUST);
         }else {
           adjust_flag = true;
@@ -270,15 +273,16 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         if (adjust_flag) {
           layer_on(_ADJUST);
           update_tri_layer(_LOWER, _RAISE, _ADJUST);
-          return false;
-        }
-        adjust_flag = true;
-        if (enable_alt.by_gui) {
-          unregister_code(KC_LGUI);
-          register_code(KC_LALT);
         } else {
-          register_code(KC_RSFT);
-          enable_alt.by_shift = true;
+          adjust_flag = true;
+          if (enable_alt.by_gui) {
+            unregister_code(KC_LGUI);
+            shift_kc = KC_LALT;
+          } else {
+            shift_kc = KC_RSFT;
+            enable_alt.by_shift = true;
+          }
+          register_code(shift_kc);
         }
       } else {
         unregister_code(KC_RSFT);
