@@ -225,6 +225,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
           unregister_code(shift_kc);
           layer_on(_ADJUST);
         }else {
+          one_tap_flag = true;
           adjust_flag.by_lower = true;
           layer_on(_LOWER);
         }
@@ -234,10 +235,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         update_tri_layer(_LOWER, _RAISE, _ADJUST);
 
         if (one_tap_flag) {
-          register_code(KC_LNG2);
-          // register_code(KC_MHEN);
-          unregister_code(KC_LNG2);
-          // unregister_code(KC_MHEN);
+          tap_code(KC_LNG2);
         }
         one_tap_flag = false;
 
@@ -282,6 +280,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             enable_alt.by_shift = true;
           }
           register_code(shift_kc);
+          one_tap_flag = true;
         }
       } else {
         unregister_code(KC_RSFT);
@@ -289,6 +288,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
           unregister_code(KC_LALT);
           enable_alt.by_shift = false;
         }
+        if (one_tap_flag) {
+          tap_code(KC_LNG1);
+        }
+        one_tap_flag = false;
 
         adjust_flag.by_shift = false;
         layer_off(_ADJUST);
@@ -370,7 +373,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       break;
     default:
       if (record->event.pressed) {
-        // reset the flag
         one_tap_flag = false;
       }
       break;
