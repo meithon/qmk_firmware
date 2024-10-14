@@ -208,12 +208,6 @@ struct Enable_alt {
 struct Adjust_flag {
     bool by_shift;
     bool by_lower;
-}
-
-enum ADJUST_FLAG {
-    BY_SHIFT,
-    BY_LOWER,
-    NONE,
 };
 
 static  struct Enable_alt enable_alt = { false, false };
@@ -239,24 +233,26 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         layer_off(_LOWER);
         update_tri_layer(_LOWER, _RAISE, _ADJUST);
 
-        if (lower_pressed) {
+        if (one_tap_flag) {
           register_code(KC_LNG2);
           // register_code(KC_MHEN);
           unregister_code(KC_LNG2);
           // unregister_code(KC_MHEN);
         }
-        lower_pressed = false;
+        one_tap_flag = false;
 
         adjust_flag.by_lower = false;
         layer_off(_ADJUST);
         update_tri_layer(_LOWER, _RAISE, _ADJUST);
-        keycode_down(KC_RSFT);
+        if (adjust_flag.by_shift) {
+          register_code(shift_kc);
+        }
       }
       return false;
       break;
     case _RAISE:
       if (record->event.pressed) {
-        lower_pressed = true;
+        one_tap_flag = true;
 
         layer_on(_RAISE);
         update_tri_layer(_LOWER, _RAISE, _ADJUST);
@@ -264,10 +260,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         layer_off(_RAISE);
         update_tri_layer(_LOWER, _RAISE, _ADJUST);
 
-        if (lower_pressed) {
+        if (one_tap_flag) {
           tap_code(KC_LNG1);
         }
-        lower_pressed = false;
+        one_tap_flag = false;
       }
       return false;
       break;
@@ -302,14 +298,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       break;
     case _ENTER:
       if (record->event.pressed) {
-        lower_pressed = true;
+        one_tap_flag = true;
         register_code(KC_LCTL);
       } else {
         unregister_code(KC_LCTL);
 
-        if (lower_pressed) {
+        if (one_tap_flag) {
           tap_code(KC_ENT);
-          lower_pressed = false;
+          one_tap_flag = false;
         }
       }
       return false;
@@ -334,17 +330,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       break;
     case _ALT:
       if (record->event.pressed) {
-        lower_pressed = true;
+        one_tap_flag = true;
 
         register_code(KC_RALT);
       } else {
         unregister_code(KC_RALT);
 
-        if (lower_pressed) {
+        if (one_tap_flag) {
           register_code(KC_SPC);
           unregister_code(KC_SPC);
         }
-        lower_pressed = false;
+        one_tap_flag = false;
       }
       return false;
       break;
@@ -375,8 +371,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     default:
       if (record->event.pressed) {
         // reset the flag
-        lower_pressed = false;
-        adjust_flag = false;
+        one_tap_flag = false;
       }
       break;
   }
