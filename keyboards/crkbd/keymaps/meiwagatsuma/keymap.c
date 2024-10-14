@@ -321,12 +321,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         } else {
           register_code(KC_LGUI);
           enable_alt.by_gui = true;
+          one_tap_flag = true;
         }
       } else {
         unregister_code(KC_LGUI);
         if (enable_alt.by_gui) {
           unregister_code(KC_LALT);
           enable_alt.by_gui = false;
+        }
+        if (one_tap_flag) {
+          tap_code(KC_ESC);
+          one_tap_flag = true;
         }
       }
       return false;
