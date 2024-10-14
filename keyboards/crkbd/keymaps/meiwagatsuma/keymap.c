@@ -225,21 +225,27 @@ void try_adjust_layers(void) {
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  bool is_adjust_by_shift = false;
   switch (keycode) {
     case _LOWER:
       if (record->event.pressed) {
         if (adjust_flag) { // Already pressing adjust key
+          is_adjust_by_shift = true;
           unregister_code(shift_kc);
           layer_on(_ADJUST);
         }else {
           adjust_flag = true;
           lower_pressed = true;
           layer_on(_LOWER);
+           update_tri_layer(_LOWER, _RAISE, _ADJUST);
         }
-        update_tri_layer(_LOWER, _RAISE, _ADJUST);
       } else {
-        layer_off(_LOWER);
-        update_tri_layer(_LOWER, _RAISE, _ADJUST);
+        if (is_adjust_by_shift) {
+          layer_off(_ADJUST);
+        } else {
+          layer_off(_LOWER);
+          update_tri_layer(_LOWER, _RAISE, _ADJUST);
+        }
 
         if (lower_pressed) {
           tap_code(KC_LNG2);
@@ -261,9 +267,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       break;
     case _SHIFT:
       if (record->event.pressed) {
+        lower_pressed = true;
         if (adjust_flag) {
           layer_on(_ADJUST);
-          update_tri_layer(_LOWER, _RAISE, _ADJUST);
         } else {
           adjust_flag = true;
           if (enable_alt.by_gui) {
@@ -272,11 +278,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
           } else {
             shift_kc = KC_RSFT;
             enable_alt.by_shift = true;
-            lower_pressed = true;
           }
           register_code(shift_kc);
         }
       } else {
+        if (adjust_flag) {
+          layer_off(_ADJUST);
+        }
         unregister_code(KC_RSFT);
         if (enable_alt.by_shift) {
           unregister_code(KC_LALT);
