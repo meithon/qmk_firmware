@@ -43,7 +43,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       KC_LSFT,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                         KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH,  KC_RSFT,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                            _GUI,  _LOWER,  KC_SPC,      _ENTER,  _SHIFT,  _RAISE
+                                          KC_LGUI,  _LOWER,  KC_SPC,      _ENTER,  _RAISE, KC_LALT
                                       //`--------------------------'  `--------------------------'
 
   ),
@@ -210,7 +210,7 @@ struct Adjust_flag {
     bool by_lower;
 };
 
-static  struct Enable_alt enable_alt = { false, false };
+// static  struct Enable_alt enable_alt = { false, false };
 static bool one_tap_flag = false;
 // static bool adjust_flag = false;
 static enum custom_keycodes shift_kc = NONE_STATE;
@@ -265,44 +265,44 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
       break;
-    case _SHIFT:
-      if (record->event.pressed) {
-        if (adjust_flag.by_lower) {
-          layer_on(_ADJUST);
-          update_tri_layer(_LOWER, _RAISE, _ADJUST);
-        } else {
-          adjust_flag.by_shift = true;
-          if (enable_alt.by_gui) {
-            unregister_code(KC_LGUI);
-            shift_kc = KC_LALT;
-          } else {
-            shift_kc = KC_RSFT;
-            enable_alt.by_shift = true;
-          }
-          register_code(shift_kc);
-          one_tap_flag = true;
-        }
-      } else {
-        unregister_code(KC_RSFT);
-        if (enable_alt.by_shift) {
-          unregister_code(KC_LALT);
-          enable_alt.by_shift = false;
-        }
-        if (one_tap_flag) {
-          tap_code(KC_LNG1);
-        }
-        one_tap_flag = false;
-
-        adjust_flag.by_shift = false;
-        layer_off(_ADJUST);
-        update_tri_layer(_LOWER, _RAISE, _ADJUST);
-      }
-      return false;
-      break;
+    // case _SHIFT:
+    //   if (record->event.pressed) {
+    //     if (adjust_flag.by_lower) {
+    //       layer_on(_ADJUST);
+    //       update_tri_layer(_LOWER, _RAISE, _ADJUST);
+    //     } else {
+    //       adjust_flag.by_shift = true;
+    //       if (enable_alt.by_gui) {
+    //         unregister_code(KC_LGUI);
+    //         shift_kc = KC_LALT;
+    //       } else {
+    //         shift_kc = KC_RSFT;
+    //         enable_alt.by_shift = true;
+    //       }
+    //       register_code(shift_kc);
+    //       one_tap_flag = true;
+    //     }
+    //   } else {
+    //     unregister_code(KC_RSFT);
+    //     if (enable_alt.by_shift) {
+    //       unregister_code(KC_LALT);
+    //       enable_alt.by_shift = false;
+    //     }
+    //     if (one_tap_flag) {
+    //       tap_code(KC_LNG1);
+    //     }
+    //     one_tap_flag = false;
+    //
+    //     adjust_flag.by_shift = false;
+    //     layer_off(_ADJUST);
+    //     update_tri_layer(_LOWER, _RAISE, _ADJUST);
+    //   }
+    //   return false;
+    //   break;
     case _ENTER:
       if (record->event.pressed) {
         one_tap_flag = true;
-        register_code(KC_LCTL);
+        register_code(KC_LGUI);
       } else {
         unregister_code(KC_LCTL);
 
@@ -313,45 +313,45 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
       break;
-    case _GUI:
-      if (record->event.pressed) {
-        if (enable_alt.by_shift) {
-          unregister_code(KC_RSFT);
-          register_code(KC_LALT);
-        } else {
-          register_code(KC_LGUI);
-          enable_alt.by_gui = true;
-          one_tap_flag = true;
-        }
-      } else {
-        unregister_code(KC_LGUI);
-        if (enable_alt.by_gui) {
-          unregister_code(KC_LALT);
-          enable_alt.by_gui = false;
-        }
-        if (one_tap_flag) {
-          tap_code(KC_ESC);
-          one_tap_flag = true;
-        }
-      }
-      return false;
-      break;
-    case _ALT:
-      if (record->event.pressed) {
-        one_tap_flag = true;
-
-        register_code(KC_RALT);
-      } else {
-        unregister_code(KC_RALT);
-
-        if (one_tap_flag) {
-          register_code(KC_SPC);
-          unregister_code(KC_SPC);
-        }
-        one_tap_flag = false;
-      }
-      return false;
-      break;
+    // case _GUI:
+    //   if (record->event.pressed) {
+    //     if (enable_alt.by_shift) {
+    //       unregister_code(KC_RSFT);
+    //       register_code(KC_LALT);
+    //     } else {
+    //       register_code(KC_LGUI);
+    //       enable_alt.by_gui = true;
+    //       one_tap_flag = true;
+    //     }
+    //   } else {
+    //     unregister_code(KC_LGUI);
+    //     if (enable_alt.by_gui) {
+    //       unregister_code(KC_LALT);
+    //       enable_alt.by_gui = false;
+    //     }
+    //     if (one_tap_flag) {
+    //       tap_code(KC_ESC);
+    //       one_tap_flag = true;
+    //     }
+    //   }
+    //   return false;
+    //   break;
+    // case _ALT:
+    //   if (record->event.pressed) {
+    //     one_tap_flag = true;
+    //
+    //     register_code(KC_RALT);
+    //   } else {
+    //     unregister_code(KC_RALT);
+    //
+    //     if (one_tap_flag) {
+    //       register_code(KC_SPC);
+    //       unregister_code(KC_SPC);
+    //     }
+    //     one_tap_flag = false;
+    //   }
+    //   return false;
+    //   break;
     case _VI_W:
       if (record->event.pressed) {
         register_code(KC_RALT);
