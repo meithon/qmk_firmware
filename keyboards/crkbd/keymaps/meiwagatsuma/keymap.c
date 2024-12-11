@@ -67,9 +67,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
       _______,   KC_F1,   KC_F2,   KC_F3,   KC_F4, RGB_TOG,                        KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,  KC_F10,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      RGB_MOD, RGB_HUI, RGB_SAI, RGB_VAI, RGB_SPI,  BL_INC,                      KC_HOME, KC_PGDN, KC_PGUP,  KC_END,  KC_F11,  KC_F12,
+      RGB_MOD, RGB_HUI, RGB_SAI, RGB_VAI, RGB_SPI, XXXXXXX,                      KC_HOME, KC_PGDN, KC_PGUP,  KC_END,  KC_F11,  KC_F12,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-     RGB_RMOD, RGB_HUD, RGB_SAD, RGB_VAD, RGB_SPD,  BL_DEC,                      KC_VOLU, KC_VOLD, XXXXXXX, XXXXXXX, XXXXXXX, KC_NO,
+     RGB_RMOD, RGB_HUD, RGB_SAD, RGB_VAD, RGB_SPD, XXXXXXX,                      KC_VOLU, KC_VOLD, XXXXXXX, XXXXXXX, XXXXXXX, KC_NO,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
                                           _______, KC_TRNS,  KC_SPC,     KC_ENT, KC_TRNS, KC_RALT
                                       //`--------------------------'  `--------------------------'
@@ -192,10 +192,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         update_tri_layer(_LOWER, _RAISE, _ADJUST);
 
         if (lower_pressed) {
-          register_code(KC_LANG2);
-          register_code(KC_MHEN);
-          unregister_code(KC_LANG2);
-          unregister_code(KC_MHEN);
+          register_code(KC_LNG2);
+          unregister_code(KC_LNG2);
         }
         lower_pressed = false;
       }
@@ -212,10 +210,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         update_tri_layer(_LOWER, _RAISE, _ADJUST);
 
         if (lower_pressed) {
-          register_code(KC_LANG1);
-          register_code(KC_HENK);
-          unregister_code(KC_LANG1);
-          unregister_code(KC_HENK);
+          register_code(KC_LNG1);
+          unregister_code(KC_LNG1);
         }
         lower_pressed = false;
       }
