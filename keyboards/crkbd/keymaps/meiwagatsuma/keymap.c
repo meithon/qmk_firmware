@@ -43,7 +43,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       KC_LSFT,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                         KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH,  KC_RSFT,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                          KC_LGUI,  _LOWER,  KC_SPC,      _ENTER,  _RAISE, KC_LALT
+                                          KC_LGUI,  _LOWER,  KC_SPC,      KC_ENT,  _RAISE, KC_LALT
                                       //`--------------------------'  `--------------------------'
 
   ),
@@ -221,36 +221,25 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
     case _LOWER:
       if (record->event.pressed) {
-        if (adjust_flag.by_shift) { // Already pressing adjust key
-          unregister_code(shift_kc);
-          layer_on(_ADJUST);
-        }else {
-          one_tap_flag = true;
-          adjust_flag.by_lower = true;
-          layer_on(_LOWER);
-        }
+        lower_pressed = true;
+
+        layer_on(_LOWER);
         update_tri_layer(_LOWER, _RAISE, _ADJUST);
       } else {
         layer_off(_LOWER);
         update_tri_layer(_LOWER, _RAISE, _ADJUST);
 
-        if (one_tap_flag) {
-          tap_code(KC_LNG2);
+        if (lower_pressed) {
+          register_code(KC_LNG2);
+          unregister_code(KC_LNG2);
         }
-        one_tap_flag = false;
-
-        adjust_flag.by_lower = false;
-        layer_off(_ADJUST);
-        update_tri_layer(_LOWER, _RAISE, _ADJUST);
-        if (adjust_flag.by_shift) {
-          register_code(shift_kc);
-        }
+        lower_pressed = false;
       }
       return false;
       break;
     case _RAISE:
       if (record->event.pressed) {
-        one_tap_flag = true;
+        lower_pressed = true;
 
         layer_on(_RAISE);
         update_tri_layer(_LOWER, _RAISE, _ADJUST);
@@ -258,10 +247,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         layer_off(_RAISE);
         update_tri_layer(_LOWER, _RAISE, _ADJUST);
 
-        if (one_tap_flag) {
-          tap_code(KC_LNG1);
+        if (lower_pressed) {
+          register_code(KC_LNG1);
+          unregister_code(KC_LNG1);
         }
-        one_tap_flag = false;
+        lower_pressed = false;
       }
       return false;
       break;
@@ -299,20 +289,20 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     //   }
     //   return false;
     //   break;
-    case _ENTER:
-      if (record->event.pressed) {
-        one_tap_flag = true;
-        register_code(KC_LGUI);
-      } else {
-        unregister_code(KC_LCTL);
-
-        if (one_tap_flag) {
-          tap_code(KC_ENT);
-          one_tap_flag = false;
-        }
-      }
-      return false;
-      break;
+    // case _ENTER:
+    //   if (record->event.pressed) {
+    //     one_tap_flag = true;
+    //     register_code(KC_LGUI);
+    //   } else {
+    //     unregister_code(KC_LCTL);
+    //
+    //     if (one_tap_flag) {
+    //       tap_code(KC_ENT);
+    //       one_tap_flag = false;
+    //     }
+    //   }
+    //   return false;
+    //   break;
     // case _GUI:
     //   if (record->event.pressed) {
     //     if (enable_alt.by_shift) {
